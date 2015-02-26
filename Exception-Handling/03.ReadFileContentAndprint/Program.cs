@@ -14,7 +14,8 @@
         {
             try
             {
-                string path = Environment.CurrentDirectory + "\\HelloFile.txt";
+                //string path = Environment.CurrentDirectory + "\\HelloFile.txt";
+                string path = @"..\..\HelloFile.txt";
                 Console.WriteLine(File.ReadAllText(path));
                 //Console.WriteLine("File directory: " + Environment.CurrentDirectory);
             }
