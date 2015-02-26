@@ -1,0 +1,15 @@
+sometext outside
+ <?xml version="1.0"?>
+<student>
+some text
+    <name>Pesho</name>
+    <age>21</age>
+    <interests count="3">
+        <interest>Games</interest>
+some text
+        <interest>C#</interest>
+        <interest>Java</interest>
+    </interests>
+</student>
+
+some text after
