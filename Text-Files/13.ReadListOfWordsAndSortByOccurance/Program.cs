@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-namespace _13.ReadListOfWordsAndSortByOccurance
+﻿namespace _13.ReadListOfWordsAndSortByOccurance
 {
+    using System;
+    using System.IO;
+    using System.Security;
+    using System.Text.RegularExpressions;
+
     class Program
     {
         // 13. Write a program that reads a list of words from a file words.txt 
@@ -21,21 +17,33 @@ namespace _13.ReadListOfWordsAndSortByOccurance
             try
             {
                 string[] words = File.ReadAllLines("../../words.txt");
-                int[] values = new int[words.Length];
+                int[] ocurances = new int[words.Length];
 
                 // Count words
                 using (StreamReader input = new StreamReader("../../test.txt"))
-                    for (string line; (line = input.ReadLine()) != null; )
+                {
+                    string line;
+
+                    while ((line = input.ReadLine()) != null)
+                    {
                         for (int i = 0; i < words.Length; i++)
-                            values[i] += Regex.Matches(line, @"\b" + words[i] + @"\b").Count;
+                        {
+                            ocurances[i] += Regex.Matches(line, @"\b" + words[i] + @"\b").Count;
+                        }
+                    }
+                }
 
                 // Sort
-                Array.Sort(values, words);
+                Array.Sort(ocurances, words);
 
                 // Write output
                 using (StreamWriter output = new StreamWriter("../../result.txt"))
+                {
                     for (int i = words.Length - 1; i >= 0; i--) // Descending order
-                        output.WriteLine("{0}: {1}", words[i], values[i]);
+                    {
+                        output.WriteLine("{0}: {1}", words[i], ocurances[i]);
+                    }
+                }
             }
 
             catch (FileNotFoundException e)

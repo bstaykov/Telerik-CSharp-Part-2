@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace _03.LineNumbers
+﻿namespace _03.LineNumbers
 {
+    using System;
+    using System.IO;
+
     class Program
     {
         // Write a program that reads a text file and inserts line numbers in front of each of its lines. 
@@ -15,23 +11,23 @@ namespace _03.LineNumbers
         static void Main(string[] args)
         {
             string fileToReadFrom = @"..\..\ReadFile.txt";
-            StreamReader reader = new StreamReader(fileToReadFrom);
-            string line = reader.ReadLine();
-
             string fileToWriteIn = @"..\..\FinalFile.txt";
-            StreamWriter writer = new StreamWriter(fileToWriteIn, false);
-            int lineCount = 1;
 
-            while (line != null)
+            using (StreamWriter streamWriter = new StreamWriter(fileToWriteIn, false))
             {
-                writer.WriteLine(lineCount + " " + line);
-                line = reader.ReadLine();
-                lineCount++;
-            }
+                using (StreamReader reader = new StreamReader(fileToReadFrom))
+                {
+                    string line = reader.ReadLine();
+                    int lineCount = 1;
 
-            reader.Close();
-            writer.Flush();
-            writer.Close();
+                    while (line != null)
+                    {
+                        streamWriter.WriteLine(lineCount + " " + line);
+                        line = reader.ReadLine();
+                        lineCount++;
+                    }
+                }
+            }
 
             Console.WriteLine("Done! Check file 'FinalFile.txt'!");
         }

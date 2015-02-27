@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace _06.SortListOfStrings
+﻿namespace _06.SortListOfStrings
 {
+    using System;
+    using System.Collections.Generic;
+    using System.IO;
+
     class Program
     {
         // 06. Write a program that reads a text file containing a list of strings,
@@ -16,35 +13,41 @@ namespace _06.SortListOfStrings
         // Maria		Maria
         // George		Peter
 
+        private static string[] ReadStringsFromFolder(string directory)
+        {
+            List<string> listOfStrings = new List<string>();
 
+            using (StreamReader streamReader = new StreamReader(directory))
+            {
+                string input = streamReader.ReadToEnd();
+                string[] separatedInput = input.Split(new[] { " ", "\r", "\n" }, StringSplitOptions.RemoveEmptyEntries);
+                return separatedInput;
+            }
+        }
+
+        private static void SaveArrayToDirectory(string directory, string[] array)
+        {
+            using (StreamWriter streamWriter = new StreamWriter(directory))
+            {
+                foreach (var item in array)
+                {
+                    streamWriter.WriteLine(item);
+                }
+            }
+        }
+
+        
         static void Main(string[] args)
         {
-            StreamReader reader = new StreamReader(@"..\..\list.txt");
-            List<string> list = new List<string>();
+            string readDirectory = @"..\..\list.txt";
+            string writeDirectory = @"..\..\sortedList.txt";
 
-            string line = reader.ReadLine();
-            int count = 0;
+            string[] arrayOfStrings = ReadStringsFromFolder(readDirectory);
 
-            while (line != null)
-            {
-                list.Add(line);
-                count++;
-                line = reader.ReadLine();
-            }
-
-            list.Sort();
-
-            StreamWriter writer = new StreamWriter(@"..\..\sortedList.txt", false);
-
-            for (int i = 0; i < count; i++)
-            {
-                writer.WriteLine(list[i]);
-            }
-
-            reader.Close();
-            writer.Flush();
-            writer.Close();
-
+            Array.Sort(arrayOfStrings, StringComparer.InvariantCulture);
+            
+            SaveArrayToDirectory(writeDirectory, arrayOfStrings);
+                        
             Console.WriteLine("Check 'sortedList.txt'");
         }
     }

@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-namespace _11.DeleteWordsStartingWith
+﻿namespace _11.DeleteWordsStartingWith
 {
+    using System;
+    using System.IO;
+    using System.Text.RegularExpressions;
+
     class Program
     {
         // 11. Write a program that deletes from a text file all words that start with the prefix "test".
@@ -15,18 +11,33 @@ namespace _11.DeleteWordsStartingWith
 
         static void Main(string[] args)
         {
-            using (StreamReader input = new StreamReader(@"../../text.txt"))
+            string fileLocation = "../../text.txt";
+            string tempfile = "../../output.txt";
+
+            using (StreamReader input = new StreamReader(fileLocation))
             {
-                using (StreamWriter output = new StreamWriter(@"../../output.txt"))
+                using (StreamWriter output = new StreamWriter(tempfile))
                 {
-                    for (string line; (line = input.ReadLine()) != null; )
+                    string line;
+
+                    while ((line = input.ReadLine()) != null)
                     {
-                        output.WriteLine(Regex.Replace(Regex.Replace(line, @"\btest((\d|\w|_)*)(\b)", ""), @"(\s){2,}", " "));
+                        output.WriteLine(Regex.Replace(Regex.Replace(line, @"\btest((\d|\w|_)*)(\b)", string.Empty), @"(\s){2,}", " "));
                     }
                 }
             }
 
-            File.Replace(@"../../output.txt", @"../../text.txt", @"..\..\backup.txt");
+            using (StreamReader input = new StreamReader(tempfile))
+            {
+                using (StreamWriter output = new StreamWriter(fileLocation))
+                {
+                    string line;
+                    while ((line = input.ReadLine()) != null)
+                    {
+                        output.WriteLine(line);
+                    }
+                }
+            }
 
         }
     }

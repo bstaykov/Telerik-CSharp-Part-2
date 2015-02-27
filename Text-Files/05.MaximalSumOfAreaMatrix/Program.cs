@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace _05.MaximalSumOfAreaMatrix
+﻿namespace _05.MaximalSumOfAreaMatrix
 {
+    using System;
+    using System.IO;
+    using System.Linq;
+
     class Program
     {
         // Write a program that reads a text file containing a square matrix of numbers 
@@ -20,106 +17,129 @@ namespace _05.MaximalSumOfAreaMatrix
         //3 7 1 2
         //4 3 3 2
 
-        private static void MaximalSum(int[,] arr)
+        private static void WriteMaximalSumOfSubMatrix(string destinationFile, int[,] matrix, int sizeOfSquare = 2)
         {
-
-            string squareStartPossition = "arr[0,0]";
-            int maxSum = int.MinValue;
-            int tempSum = maxSum;
-
-            for (int row = 0; row < arr.GetLength(0) - 1; row++)
+            if (matrix.GetLength(0) < sizeOfSquare)
             {
-                for (int col = 0; col < arr.GetLength(1) - 1; col++)
+                throw new ArgumentOutOfRangeException("Size is more than matrix size.");
+            }
+
+            string squareStartPossition = "matrix[0,0]";
+            int maxSum = int.MinValue;
+            int tempSum = int.MinValue;
+
+            for (int row = 0; row < matrix.GetLength(0) - sizeOfSquare + 1; row++)
+            {
+                for (int col = 0; col < matrix.GetLength(1) - sizeOfSquare + 1; col++)
                 {
-                    tempSum = arr[row, col] + arr[row, col + 1] + arr[row + 1, col] + arr[row + 1, col + 1];
-            
+                    tempSum = SumOfSubMatrix(matrix, row, col, sizeOfSquare);
+
                     if (tempSum > maxSum)
                     {
                         maxSum = tempSum;
-                        squareStartPossition = "arr[" + row + "," + col + "]";
+                        squareStartPossition = "matrix[" + row + "," + col + "]";
                     }
                 }
             }
 
-            Console.WriteLine("Start possition: " + squareStartPossition);
-            Console.WriteLine("Maximal sum = " + maxSum);
+            //Console.WriteLine("Start possition: " + squareStartPossition);
+            //Console.WriteLine("Square's size = " + sizeOfSquare);
+            //Console.WriteLine("Maximal sum = " + maxSum);
 
-            StreamWriter writer = new StreamWriter(@"..\..\answer.txt", false);
-            writer.WriteLine(maxSum);
-
-            writer.Flush();
-            writer.Close();
+            using (StreamWriter writer = new StreamWriter(destinationFile, false))
+            {
+                writer.WriteLine(maxSum);
+            }
         }
 
-        private static int[,] ReadArrFromFile(string fileLocation)
+        private static int SumOfSubMatrix(int[,] matrix, int startRow, int startCol, int sizeOfSubMatrix)
         {
-            StreamReader reader = new StreamReader(fileLocation);
-            string line = reader.ReadLine();
-            int rowlAndCol = int.Parse(line);
-            int rows = rowlAndCol;
-            int cols = rowlAndCol;
+            int sum = 0;
 
-            int [,] arr = new int[rows, cols];
-            int[] colArr = new int[cols];
-            int rowTo = 0;
-
-            line = reader.ReadLine();
-            
-            while (line != null)
+            for (int i = startRow; i < startRow + sizeOfSubMatrix; i++)
             {
-                colArr = StringToIntArr(line);
-                for (int i = 0; i < cols; i++)
+                for (int j = startCol; j < startCol + sizeOfSubMatrix; j++)
                 {
-                    arr[rowTo, i] = colArr[i];
+                    sum += matrix[i, j];
                 }
-                rowTo++;
-                line = reader.ReadLine();
             }
 
-            reader.Close();
-
-            return arr;
-        }
-
-        private static int[] StringToIntArr(string line)
-        {
-            char[] separator = { ' ' };
-            string[] arr2 = line.Split(separator);
-            int [] arr = new int[arr2.Length];
-
-            for (int i = 0; i < arr.Length; i++)
-            {
-                arr[i] = int.Parse(arr2[i]);
-            }
-
-            return arr;
+            return sum;
         }
 
         static void Main(string[] args)
         {
             string fileLocation = @"..\..\file1.txt";
+            string destinationFile = @"..\..\answer.txt";
+            int sizeOfSubMatrix = 2;
+            int[,] matrix = ReadMatrixFromFile(fileLocation);
 
-            int[,] arr1 = {
-                            { 2, 3, 3, 4 },
-                            { 0, 2, 3, 4 },
-                            { 3, 7, 1, 2 },
-                            { 4, 3, 3, 2 } 
-                          };
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    Console.Write(matrix[i, j]);
+                }
 
-            int[,] arr2 = ReadArrFromFile(fileLocation);
-            MaximalSum(arr2);
-            //check
-            MaximalSum(arr1);
+                Console.WriteLine();
+            }
 
-            //for (int row = 0; row < arr.GetLength(0); row++)
-            //{
-            //    for (int col = 0; col < arr.GetLength(1); col++)
-            //    {
-            //        Console.Write(arr[row, col] + "\t");
-            //    }
-            //    Console.WriteLine();
-            //    Console.WriteLine();
-            //}
+            Console.WriteLine();
+
+            WriteMaximalSumOfSubMatrix(destinationFile, matrix, sizeOfSubMatrix);
+
+            Console.WriteLine("Check file!");
+
+        }
+
+        private static int[] ParseToNumbers(string numbersAsString)
+        {
+            var numbers = numbersAsString
+                .Split(new[] { " " }, StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => int.Parse(x))
+                .ToArray();
+
+            return numbers;
+        }
+
+        private static int[,] ReadMatrixFromFile(string fileDirectory)
+        {
+            using (StreamReader streamReader = new StreamReader(fileDirectory))
+            {
+                string sizeAsString = streamReader.ReadLine();
+
+                int sizeOfMatrix;
+
+                bool isSizeCorrect = int.TryParse(sizeAsString, out sizeOfMatrix);
+
+                if (isSizeCorrect == false)
+                {
+                    throw new InvalidCastException("Invalid input on file.");
+                }
+
+                int[,] matrix = new int[sizeOfMatrix, sizeOfMatrix];
+
+                for (int i = 0; i < sizeOfMatrix; i++)
+                {
+                    string line = streamReader.ReadLine();
+
+                    if (line != null)
+                    {
+                        int[] rowNumbers = ParseToNumbers(line);
+
+                        for (int j = 0; j < sizeOfMatrix; j++)
+                        {
+                            matrix[i, j] = rowNumbers[j];
+                        }
+                    }
+                    else
+                    {
+                        throw new IOException("Invalid line count.");
+                    }
+                }
+
+                return matrix;
+            }
         }
     }
 }

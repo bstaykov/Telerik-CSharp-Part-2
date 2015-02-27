@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Security;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-
-namespace _12.RemoveWorldsListedInAnotherFile
+﻿namespace _12.RemoveWorldsListedInAnotherFile
 {
+    using System;
+    using System.IO;
+    using System.Security;
+    using System.Text.RegularExpressions;
+
     class Program
     {
         // 12. Write a program that removes from a text file all words listed in given another text file. 
@@ -19,12 +15,22 @@ namespace _12.RemoveWorldsListedInAnotherFile
         {
             try
             {
-                string regex = @"\b(" + String.Join("|", File.ReadAllLines("../../words.txt")) + @")\b";
+                string regex = @"\b(" + string.Join("|", File.ReadAllLines("../../words.txt")) + @")\b";
+
+                Console.WriteLine(regex);
 
                 using (StreamReader input = new StreamReader("../../input.txt"))
-                using (StreamWriter output = new StreamWriter("../../output.txt"))
-                    for (string line; (line = input.ReadLine()) != null; )
-                        output.WriteLine(Regex.Replace(line, regex, String.Empty));
+                {
+                    using (StreamWriter output = new StreamWriter("../../output.txt"))
+                    {
+                        string line;
+
+                        while ((line = input.ReadLine()) != null)
+                        {
+                            output.WriteLine(Regex.Replace(line, regex, string.Empty));
+                        }
+                    }
+                }
             }
 
             catch (FileNotFoundException e)
